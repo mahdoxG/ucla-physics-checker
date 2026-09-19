@@ -1,4 +1,5 @@
 import os
+import time
 import requests
 from playwright.sync_api import sync_playwright
 
@@ -37,12 +38,22 @@ def check_ucla_classes():
     return open_spots
 
 if __name__ == "__main__":
-    # --- TEST MODE ---
-    spots = [{"name": "TEST RUN - Physics 5A", "url": "https://sa.ucla.edu"}]
-    
-    if spots:
-        for spot in spots:
-            message = f"🚨 **UCLA PHYSICS SPOT OPEN:** {spot['name']}\nRegister now: {spot['url']}"
-            print(message)
-            if DISCORD_WEBHOOK_URL:
-                requests.post(DISCORD_WEBHOOK_URL, json={"content": message})
+    CHECKS_PER_RUN = 4
+    DELAY_SECONDS = 60
+
+    for i in range(CHECKS_PER_RUN):
+        print(f"Check {i+1} of {CHECKS_PER_RUN}...")
+        spots = check_ucla_classes()
+        
+        if spots:
+            for spot in spots:
+                message = f"🚨 **UCLA PHYSICS SPOT OPEN:** {spot['name']}\nRegister now: {spot['url']}"
+                print(message)
+                if DISCORD_WEBHOOK_URL:
+                    requests.post(DISCORD_WEBHOOK_URL, json={"content": message})
+            break
+            
+        print("All sections full.")
+        if i < CHECKS_PER_RUN - 1:
+            print(f"Waiting {DELAY_SECONDS} seconds before next check...\n")
+            time.sleep(DELAY_SECONDS)
