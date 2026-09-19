@@ -36,8 +36,20 @@ def check_ucla_classes():
         browser.close()
         
     return open_spots
+    
+    if __name__ == "__main__":
+    # --- TEST MODE: FORCING A FAKE ALERT ---
+    spots = [{"name": "TEST RUN - Physics 5A", "url": "https://sa.ucla.edu"}]
+    
+    # (Leave the rest of the script as is)
+    if spots:
+        for spot in spots:
+            message = f"🚨 **UCLA PHYSICS SPOT OPEN:** {spot['name']}\nRegister now: {spot['url']}"
+            print(message)
+            if DISCORD_WEBHOOK_URL:
+                requests.post(DISCORD_WEBHOOK_URL, json={"content": message})
 
-if __name__ == "__main__":
+"""if __name__ == "__main__":
     # Runs 4 checks spaced 60 seconds apart per GitHub Actions execution
     CHECKS_PER_RUN = 4
     DELAY_SECONDS = 60
@@ -53,7 +65,7 @@ if __name__ == "__main__":
                 if DISCORD_WEBHOOK_URL:
                     requests.post(DISCORD_WEBHOOK_URL, json={"content": message})
             break  # Exit immediately if a spot is found
-            
+            """
         print("All sections full.")
         if i < CHECKS_PER_RUN - 1:
             print(f"Waiting {DELAY_SECONDS} seconds before next check...\n")
